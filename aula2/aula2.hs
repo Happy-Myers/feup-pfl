@@ -30,7 +30,7 @@ myand'Aux (x:xs) acc = myand'Aux xs (acc && x)
 myor :: [Bool]->Bool
 
 myor [] = False
-myor l 
+myor l
     | head l = True
     | not (head l) = myor (tail l)
 
@@ -63,12 +63,12 @@ myreplicate' n x = [x | _ <- [1..n]]
 
 [] @@ _ = error "lista vazia"
 (x:_) @@ 0 = x
-(_:xs) @@ n 
+(_:xs) @@ n
     | n > 0 = xs @@ (n-1)
     |otherwise = error "argumento inteiro negativo"
 
 
-(@@@) :: Integral b => [a] -> b -> a 
+(@@@) :: Integral b => [a] -> b -> a
 
 l @@@ n = head [x | (x,i) <- zip l [0..], i == n]
 
@@ -78,7 +78,7 @@ l @@@ n = head [x | (x,i) <- zip l [0..], i == n]
 myelem :: Eq a => a -> [a] -> Bool
 
 myelem _ [] = False
-myelem n (x:xs) 
+myelem n (x:xs)
     | x == n = True
     | otherwise = myelem n xs
 --extra
@@ -94,15 +94,62 @@ myreverse' l = myreverse'Aux l []
 
 myreverse'Aux :: [a] -> [a] -> [a]
 
-myreverse'Aux [] acc = acc 
+myreverse'Aux [] acc = acc
 myreverse'Aux (x:xs) acc = myreverse'Aux xs (x:acc)
 
 --ex 2.2
 interperse :: a -> [a] -> [a]
 
 interperse _ [] = []
-interperse _ (x:[]) = [x]
+interperse _ [x] = [x]
 interperse a (x:xs) = x:a:(interperse a xs)
+
+--ex 2.3
+mdc :: Integer -> Integer -> Integer
+
+mdc a 0 = a
+mdc a b = mdc b (mod a b)
+
+--ex 2.4
+--a)
+insert :: Ord a => a -> [a] -> [a]
+
+insert a [] = [a]
+insert a (x:xs)
+    | x > a = a:x:xs
+    |otherwise = x:(insert a xs)
+
+--b)
+isort :: Ord a => [a] -> [a]
+
+isort [] = []
+
+isort (x:xs) = insert x (isort xs)
+
+
+--ex 2.5 
+--a)
+minimum' :: Ord a => [a] -> a
+
+minimum' [x] = x
+minimum' (x:xs) 
+    | x < minimum' xs = x
+    | otherwise = minimum' xs
+
+--b)
+delete :: Eq a => a -> [a] -> [a]
+
+delete a [] = []
+delete a (x:xs)
+    | x == a = xs
+    | otherwise = x:(delete a xs)
+
+--c)
+ssort :: Ord a => [a] -> [a]
+
+ssort [] = []
+ssort l = m:(ssort (delete m l))
+    where m = minimum' l
 
 --ex 2.6
 
