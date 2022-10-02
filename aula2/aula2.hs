@@ -1,12 +1,17 @@
---ex 2.1
---a)
-
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 import Distribution.SPDX (LicenseId(RPL_1_5))
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Redundant bracket" #-}
 {-# HLINT ignore "Use foldl" #-}
+
+{-# HLINT ignore "Use foldr" #-}
+{-# HLINT ignore "Redundant bracket" #-}
+{-# HLINT ignore "Use foldl" #-}
+import Data.Char ( chr, ord, isAsciiUpper, isNumber, isAsciiLower)
+
+--ex 2.1
+--a)
 
 myand :: [Bool]->Bool
 
@@ -132,7 +137,7 @@ isort (x:xs) = insert x (isort xs)
 minimum' :: Ord a => [a] -> a
 
 minimum' [x] = x
-minimum' (x:xs) 
+minimum' (x:xs)
     | x < minimum' xs = x
     | otherwise = minimum' xs
 
@@ -152,7 +157,177 @@ ssort l = m:(ssort (delete m l))
     where m = minimum' l
 
 --ex 2.6
-
 squaresum :: Integral a => a -> a
 
 squaresum n = sum [x^2 | x <- [1 .. n]]
+
+--ex 2.7
+--a)
+aprox :: Int -> Double
+
+aprox n = sum [fromIntegral((-1)^x) / fromIntegral ((2*x + 1)) | x <- [0 .. n]] * 4
+
+--b)
+aprox' :: Int -> Double
+
+aprox' n = sqrt (sum [fromIntegral ((-1)^x) / fromIntegral ((x + 1)^2) | x <- [0 .. n]] * 12)
+
+--ex 2.8
+
+dotprod :: [Float] -> [Float] -> Float
+
+dotprod l s = sum [a * b | (a , b) <- zip l s]
+
+--ex 2.9
+
+divprop :: Integer -> [Integer]
+
+divprop n = [x | x <- [1 .. n-1], rem n x == 0]
+
+--ex 2.10
+
+perfeitos :: Integer -> [Integer]
+
+perfeitos n = [x | x<- [1 .. n], sum (divprop x) == x]
+
+--ex 2.11
+pitagoricos :: Integer -> [(Integer, Integer, Integer)]
+
+pitagoricos n = [(x,y,z) | x<-[1..n] ,y<-[1..n], z<-[1..n], x^2 + y^2 == z^2]
+
+--ex 2.12
+primo :: Integer -> Bool
+
+primo n = length (divprop n) == 1
+
+--ex 2.13 
+mersennes :: [Int]
+
+mersennes = [2^x -1 | x<-[1 .. 30], primo (2^x -1)]
+
+--ex 2.14
+
+pascal :: Integer -> [[Integer]]
+
+binom :: Integer -> Integer -> Integer
+binom n k
+    | k < n-k = div (product [n-k+1 .. n]) (product [1 .. k])
+    | k >= n-k = div (product [k+1 .. n]) (product [1 .. n-k])
+
+pascal n = [[binom x k | k<- [0 .. x]] | x<- [0 .. n]]
+
+--ex 2.15
+
+cifrar :: Int -> String -> String
+
+letraInt :: Char -> Int
+letraInt c = ord c - ord 'A'
+
+intLetra :: Int -> Char
+intLetra n = chr (n + ord 'A')
+
+maiuscula :: Char -> Bool
+maiuscula = isAsciiUpper
+
+desloca :: Int -> Char -> Char
+desloca k x
+    | maiuscula x = intLetra (mod (letraInt x + k) 26)
+    | otherwise = x
+
+cifrar k xs = [desloca k x | x<-xs]
+
+--ex 2.16
+concat' :: [[a]] ->[a]
+
+concat' l = [x | n<-l, x<-n]
+
+replicate' :: Integral a => a -> b -> [b]
+
+replicate' x k = [k | _<-[1..x]]
+
+(!!!) :: Integral b => [a] -> b -> a
+
+l !!! x = head [n | (n,i)<- zip l [0..], i == x]
+
+--ex 2.17
+forte :: String -> Bool
+
+forte l = length l >= 8 && checkNumber l && checkUpperCase l && checkLowerCase l
+
+checkNumber :: String -> Bool
+
+checkNumber l = or [isNumber x | x<-l]
+
+checkUpperCase :: String -> Bool
+checkUpperCase l = or [isAsciiUpper x | x<-l]
+
+checkLowerCase :: String -> Bool
+checkLowerCase l = or [isAsciiLower x | x<-l]
+
+--ex 2.18
+--a) 
+mindiv :: Int -> Int
+mindiv x
+    |null l = x
+    | otherwise = head l
+    where l = [n | n<-[2 .. (floor (sqrt (fromIntegral x)))], rem x n == 0]
+
+--b)
+prime :: Int -> Bool
+
+prime n = n > 1 && mindiv n == n
+
+--ex 2.19
+nub :: Eq a => [a] -> [a]
+
+nub [] = []
+nub (x:xs) = x:(nub [n | n<-xs, n /= x])
+
+
+--ex 2.20
+-- ?????
+
+
+--ex 2.21
+algarismos :: Int -> [Int]
+
+algarismos n =  reverse (algarismosAux n)
+
+algarismosAux 0 = []
+algarismosAux n = (rem n 10):(algarismosAux (div n 10))
+
+--ex 2.22
+toBits :: Int -> [Int]
+
+toBits 0 = [0]
+toBits n =  reverse (toBitsAux n)
+
+toBitsAux 0 = []
+toBitsAux n = (rem n 2):(toBitsAux (div n 2))
+
+--ex 2.23
+fromBits :: [Int] -> Int
+
+fromBits l = sum [n * 2^i  | (n,i) <- zip (reverse l) [0..]]
+
+--ex 2.24
+--a)
+merge :: Ord a => [a] -> [a] -> [a]
+
+merge [] l = l
+merge l [] = l
+merge (x:xs) (xa:xsa)
+    | x < xa = x:(merge xs (xa:xsa))
+    | otherwise = xa:(merge (x:xs) xsa)
+
+--b)
+msort :: Ord a => [a] -> [a]
+
+msort [] = []
+msort [x] = [x]
+msort l = merge (msort a) (msort b)
+    where (a,b) = metades l
+
+metades :: [a] -> ([a], [a])
+metades l = splitAt s l
+    where s = div (length l) 2

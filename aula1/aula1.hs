@@ -1,4 +1,5 @@
 --ex 1.1
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 testaTriangulo :: Float ->Float ->Float -> Bool
 testaTriangulo a b c = x && y && z
     where x = a + b > c
