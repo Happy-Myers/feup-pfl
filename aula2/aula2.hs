@@ -285,12 +285,9 @@ nub (x:xs) = x:(nub [n | n<-xs, n /= x])
 
 
 --ex 2.20
+-- ?????
 
-transpostaAux :: [[a]] -> [(a, [a])]
 
-transpostaAux l = [(head x, tail x) | x <- l]
-
---TODO: perguntar sobre este ex ao stor (again)
 --ex 2.21
 algarismos :: Int -> [Int]
 
