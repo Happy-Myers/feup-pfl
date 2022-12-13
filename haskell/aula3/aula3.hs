@@ -142,7 +142,6 @@ despalavras :: [String] -> String
 
 despalavras l = foldl (\x acc -> x ++ [' '] ++ acc) [] l
 
--- TODO : perguntar ao stor pq q o espaço aparecece no inicio
 
 --ex 3.9
 scanl' :: (b -> a -> b) -> b -> [a] -> [b]

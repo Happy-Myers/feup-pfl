@@ -1,6 +1,5 @@
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-import Distribution.SPDX (LicenseId(RPL_1_5))
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Redundant bracket" #-}
 {-# HLINT ignore "Use foldl" #-}
@@ -286,11 +285,10 @@ nub (x:xs) = x:(nub [n | n<-xs, n /= x])
 
 --ex 2.20
 
-transpostaAux :: [[a]] -> [(a, [a])]
+transposta :: [[a]] -> [[a]]
+transposta [] = []
+transposta x = map (head) x:transposta [tail s | s<-x, length s > 1]
 
-transpostaAux l = [(head x, tail x) | x <- l]
-
---TODO: perguntar sobre este ex ao stor (again)
 --ex 2.21
 algarismos :: Int -> [Int]
 
