@@ -87,4 +87,73 @@ bfs([[Na|T]-Fs|Ns],Nf,Sol):-
 
 % find_all_flights(+Origin, +Destination, -ListOfFlights).
 
+find_all_flights(Origin, Destination, ListOfFlights):-
+    findall(Flights, find_flights_breadth(Origin, Destination, Flights), ListOfFlights).
 
+
+% find_flights_least_stops(+Origin, +Destination, -ListOfFlights).
+
+find_flights_least_stops(Origin, Destination, ListOfFlights):-
+    find_flights_breadth(Origin, Destination, Flights),
+    !,
+    length(Flights, Len),
+    length(Fs, Len),
+    findall(Fs, find_flights(Origin, Destination, Fs), ListOfFlights).
+
+%find_flights_stops(+Origin, +Destination, +Stops, -ListFlights)
+
+find_flights_stops(Origin, Destination, Stops, ListOfFlights):-
+    findall(Flights, dfsStops([Origin], Destination, Stops, Flights), ListOfFlights).
+
+dfsStops([Nf|_], Nf, [], []).
+dfsStops([Na|T], Nf, Stops, [F|Fs]):-
+    direct_flight(Na, Nb, F),
+    \+member(Nb,[Na|T]),
+    member(Nb, Stops),
+    append(L, [Nb|T1], Stops),
+    append(L, T1, Stops1),
+    dfsStops([Nb, Na|T], Nf, Stops1, Fs).
+dfsStops([Na|T], Nf, Stops, [F|Fs]):-
+    direct_flight(Na, Nb, F),
+    \+member(Nb,[Na|T]),
+    \+member(Nb, Stops),
+    dfsStops([Nb, Na|T], Nf, Stops, Fs).
+
+%find_circular_trip (+MaxSize, +Origin, -Cycle)
+
+find_circular_trip(MaxSize, Origin, Cycle):-
+    dfsCircular([Origin], Origin, MaxSize, Cycle).
+
+dfsCircular([Nf, _|_], Nf, _, []).
+dfsCircular([Na|T], Nf, MaxSize, [F|Fs]):-
+    \+length([Na|T], MaxSize),
+    direct_flight(Na, Nb, F),
+    \+member(Nb,[Na|T]),
+    dfsCircular([Nb, Na|T], Nf, MaxSize, Fs).
+dfsCircular([Na|T], Nf, MaxSize, [F|Fs]):-
+    \+length([Na|T], MaxSize),
+    direct_flight(Na, Nb, F),
+    Nb = Nf,
+    dfsCircular([Nb, Na|T], Nf, MaxSize, Fs).
+
+% find_circular_trips(+MaxSize, +Origin, -Cycles)
+
+find_circular_trips(MaxSize, Origin, Cycles):-
+    findall(Cycle, find_circular_trip(MaxSize, Origin, Cycle), Cycles).
+
+%strongly_connected(+ListOfNodes) 
+
+strongly_connected(ListOfNodes):-
+    strongly_connected(ListOfNodes, ListOfNodes).
+
+strongly_connected([], _).
+strongly_connected([Na|T], Reference):-
+    check_connection(Na, Reference),
+    strongly_connected(T, Reference).
+
+check_connection(_, []).
+check_connection(Na, [Na|T]):-
+    check_connection(Na, T).
+check_connection(Na, [Ra|T]):-
+    find_flights(Na, Ra, _),
+    check_connection(Na, T).
